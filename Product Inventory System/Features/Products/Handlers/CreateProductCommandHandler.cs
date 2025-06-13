@@ -23,7 +23,7 @@ namespace Product_Inventory_System.Features.Products.Handlers
             };
 
             _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return product.ProductId;
         }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Product_Inventory_System.Data;
 using Product_Inventory_System.Features.Products.Commands;
+using Product_Inventory_System.Features.Products.Queries;
 
 namespace Product_Inventory_System.Controllers
 {
@@ -19,7 +20,6 @@ namespace Product_Inventory_System.Controllers
             _sender = sender;
             _context = context;
         }
-
 
         [HttpPost("create-product")]
         public async Task<ActionResult<int>> CreateProduct([FromBody] CreateProductCommand command)
@@ -37,6 +37,19 @@ namespace Product_Inventory_System.Controllers
             var productId = await _sender.Send(command);
 
             return productId;
+        }
+
+        [HttpGet("get-product/{productId}")]
+        public async Task<IActionResult> GetProductById(int productId)
+        {
+            var product = await _sender.Send(new GetProductByIdQuery(productId));
+
+            if (product == null)
+            {
+                return NotFound("Product not found.");
+            }
+
+            return Ok(product);
         }
 
         #region Helpers
