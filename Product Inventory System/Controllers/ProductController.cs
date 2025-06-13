@@ -52,6 +52,19 @@ namespace Product_Inventory_System.Controllers
             return Ok(product);
         }
 
+        [HttpGet("get-all-products")]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var products = await _sender.Send(new GetAllProductsQuery());
+
+            if (products == null || !products.Any())
+            {
+                return NotFound("No products found.");
+            }
+
+            return Ok(products);
+        }
+
         #region Helpers
         private async Task<bool> CheckProductExistsAsync(string name, string category, int? productIdToExclude = null)
         {
