@@ -65,6 +65,30 @@ namespace Product_Inventory_System.Controllers
             return Ok(products);
         }
 
+        [HttpPut("update-product/{productId}")]
+        public async Task<IActionResult> UpdateProduct(int productId,[FromBody] UpdateProductCommand command)
+        {
+            if (command == null)
+            {
+                return BadRequest("Invalid product data.");
+            }
+
+            var product = new UpdateProductCommand(productId, command.Name, command.Category);
+
+            if (await CheckProductExistsAsync(product.Name, product.Category, product.ProductId))
+            {
+                return Conflict("A product with the same name and category already exists.");
+            }
+
+            var result = await _sender.Send(product);
+            if (!result)
+            {
+                return NotFound("Product not found or update failed.");
+            }
+
+            return Ok("Product updated successfully.");
+        }
+
         #region Helpers
         private async Task<bool> CheckProductExistsAsync(string name, string category, int? productIdToExclude = null)
         {
