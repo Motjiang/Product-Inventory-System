@@ -89,6 +89,21 @@ namespace Product_Inventory_System.Controllers
             return Ok("Product updated successfully.");
         }
 
+        [HttpDelete("delete-product/{productId}")]
+        public async Task<IActionResult> DeleteProduct(int productId)
+        {
+            var command = new DeleteProductCommand(productId);
+
+            var result = await _sender.Send(command);
+
+            if (!result)
+            {
+                return NotFound($"Product with ID {productId} not found.");
+            }
+
+            return Ok($"Product with ID {productId} has been deleted.");
+        }
+
         #region Helpers
         private async Task<bool> CheckProductExistsAsync(string name, string category, int? productIdToExclude = null)
         {
